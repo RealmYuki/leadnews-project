@@ -1,0 +1,5 @@
+# 项目排除路径
+/leadnews-common/target/
+/leadnews-model/target/
+/leadnews-service/leadnews-user/target/
+/leadnews-utils/target/
