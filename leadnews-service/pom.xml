@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>com.heima</groupId>
+            <artifactId>leadnews-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.heima</groupId>
             <artifactId>leadnews-feign-api</artifactId>
         </dependency>
         <!-- Spring boot starter -->
