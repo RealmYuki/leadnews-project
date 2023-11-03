@@ -1,0 +1,11 @@
+server:
+  port: 51802
+spring:
+  application:
+    name: leadnews-article
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.10.100:8848
+      config:
+        enabled: false
