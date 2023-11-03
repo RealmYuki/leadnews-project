@@ -1,11 +1,15 @@
 package com.article.controller.v1;
 
+import com.article.service.ApArticleService;
+import com.common.constans.ArticleConstants;
 import com.model.article.dto.ArticleHomeDto;
 import com.model.common.dtos.ResponseResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * ClassName: ArticleHomeController
@@ -25,19 +29,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/article")
 public class ArticleHomeController {
 
+    @Resource
+    private ApArticleService apArticleService;
+
     @PostMapping("/load")
     public ResponseResult load(@RequestBody ArticleHomeDto articleHomeDto){
-        return null;
+        return apArticleService.load(ArticleConstants.LOADTYPE_LOAD_MORE,articleHomeDto);
     }
 
     @PostMapping("/loadmore")
     public ResponseResult loadmore(@RequestBody ArticleHomeDto articleHomeDto){
-        return null;
+        return apArticleService.load(ArticleConstants.LOADTYPE_LOAD_MORE,articleHomeDto);
     }
 
     @PostMapping("/loadnew")
     public ResponseResult loadnew(@RequestBody ArticleHomeDto articleHomeDto){
-        return null;
+        return apArticleService.load(ArticleConstants.LOADTYPE_LOAD_NEW,articleHomeDto);
     }
 
 
