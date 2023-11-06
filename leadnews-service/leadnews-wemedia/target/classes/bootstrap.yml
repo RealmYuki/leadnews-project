@@ -1,8 +1,8 @@
 server:
-  port: 51801
+  port: 51803
 spring:
   application:
-    name: leadnews-user
+    name: leadnews-wemedia
   cloud:
     nacos:
       discovery:
@@ -10,10 +10,10 @@ spring:
       config:
         enabled: false
   datasource:
-    url: jdbc:mysql://192.168.10.100:3306/leadnews_user?useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.10.100:3306/leadnews_wemedia?useSSL=false
     username: root
     password: 4869
-    driver-class-name: com.mysql.jdbc.Driver
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
-  type-aliases-package: com.model.user.pojos
+  type-aliases-package: com.model.wemedia.pojos
