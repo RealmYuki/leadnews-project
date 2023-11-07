@@ -1,7 +1,7 @@
 package com.article.controller.v1;
 
 import com.article.service.ApArticleService;
-import com.common.constans.ArticleConstants;
+import com.model.common.constants.ArticleConstants;
 import com.model.article.dto.ArticleHomeDto;
 import com.model.common.dtos.ResponseResult;
 import org.springframework.web.bind.annotation.PostMapping;

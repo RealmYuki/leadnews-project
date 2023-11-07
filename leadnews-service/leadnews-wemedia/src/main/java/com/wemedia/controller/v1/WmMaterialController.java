@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.model.common.constants.WemediaConstants.CANCEL_COLLECT_MATERIAL;
+import static com.model.common.constants.WemediaConstants.COLLECT_MATERIAL;
+
 /**
  * ClassName: WmMaterialController
  * Description:
@@ -40,12 +43,12 @@ public class WmMaterialController {
 
     @GetMapping("/collect/{id}")
     public ResponseResult collectPicture(@PathVariable("id") Long id){
-        return wmMaterialService.collectPicture(id, (short) 1);
+        return wmMaterialService.collectPicture(id, COLLECT_MATERIAL);
     }
 
     @GetMapping("/cancel_collect/{id}")
     public ResponseResult cancelCollectPicture(@PathVariable("id") Long id){
-        return wmMaterialService.collectPicture(id, (short) 0);
+        return wmMaterialService.collectPicture(id, CANCEL_COLLECT_MATERIAL);
     }
 
 }

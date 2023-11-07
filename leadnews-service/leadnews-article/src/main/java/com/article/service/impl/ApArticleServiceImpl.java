@@ -4,7 +4,7 @@ import com.alibaba.cloud.commons.lang.StringUtils;
 import com.article.mapper.ApArticleMapper;
 import com.article.service.ApArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.common.constans.ArticleConstants;
+import com.model.common.constants.ArticleConstants;
 import com.model.article.dto.ArticleHomeDto;
 import com.model.article.pojo.ApArticle;
 import com.model.common.dtos.ResponseResult;

@@ -1,13 +1,11 @@
 package com.wemedia.controller.v1;
 
 import com.model.common.dtos.ResponseResult;
+import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.wemedia.service.WmNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * ClassName: WmNewsController
@@ -27,5 +25,12 @@ public class WmNewsController {
     public ResponseResult findAll(@RequestBody WmNewsPageReqDto dto){
         return wmNewsService.findAll(dto);
     }
+
+    @PostMapping("/submit")
+    public ResponseResult submitNews(@RequestBody WmNewsDto dto){
+        return wmNewsService.submitNews(dto);
+    }
+
+
 
 }

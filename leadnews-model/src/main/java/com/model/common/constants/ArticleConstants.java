@@ -1,4 +1,4 @@
-package com.common.constans;
+package com.model.common.constants;
 
 /**
  * ClassName: ArticleConstants
