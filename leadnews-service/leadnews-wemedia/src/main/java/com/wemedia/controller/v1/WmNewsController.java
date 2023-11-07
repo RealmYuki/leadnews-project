@@ -31,6 +31,14 @@ public class WmNewsController {
         return wmNewsService.submitNews(dto);
     }
 
+    @GetMapping("/one/{id}")
+    public ResponseResult findOne(@PathVariable("id") Long id){
+        return wmNewsService.findOne(id);
+    }
 
+    @GetMapping("/del_news/{id}")
+    public ResponseResult deleteNews(@PathVariable("id") Long id){
+        return wmNewsService.deleteNews(id);
+    }
 
 }

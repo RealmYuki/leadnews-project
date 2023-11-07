@@ -10,8 +10,10 @@ import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
 import com.model.wemedia.dtos.WmMaterialDto;
 import com.model.wemedia.pojos.WmMaterial;
+import com.model.wemedia.pojos.WmNewsMaterial;
 import com.utils.thread.WmThreadLocalUtil;
 import com.wemedia.mapper.WmMaterialMapper;
+import com.wemedia.mapper.WmNewsMaterialMapper;
 import com.wemedia.service.WmMaterialService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,7 +36,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @Service
-public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMaterial> implements WmMaterialService{
+public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMaterial> implements WmMaterialService {
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -41,7 +44,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     @Override
     public ResponseResult uploadPicture(MultipartFile multipartFile) {
         //1.检查参数
-        if(multipartFile == null || multipartFile.getSize() == 0){
+        if (multipartFile == null || multipartFile.getSize() == 0) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
@@ -53,7 +56,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         String fileId = null;
         try {
             fileId = fileStorageService.uploadImgFile("", fileName + postfix, multipartFile.getInputStream());
-            log.info("上传图片到MinIO中，fileId:{}",fileId);
+            log.info("上传图片到MinIO中，fileId:{}", fileId);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("WmMaterialServiceImpl-上传文件失败");
@@ -63,8 +66,8 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         WmMaterial wmMaterial = new WmMaterial();
         wmMaterial.setUserId(WmThreadLocalUtil.getUser().getId());
         wmMaterial.setUrl(fileId);
-        wmMaterial.setIsCollection((short)0);
-        wmMaterial.setType((short)0);
+        wmMaterial.setIsCollection((short) 0);
+        wmMaterial.setType((short) 0);
         wmMaterial.setCreatedTime(new Date());
         save(wmMaterial);
 
@@ -80,32 +83,42 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         dto.checkParam();
 
         //2.分页查询
-        IPage page = new Page(dto.getPage(),dto.getSize());
+        IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<WmMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //是否收藏
-        if(dto.getIsCollection() != null && dto.getIsCollection() == 1){
-            lambdaQueryWrapper.eq(WmMaterial::getIsCollection,dto.getIsCollection());
+        if (dto.getIsCollection() != null && dto.getIsCollection() == 1) {
+            lambdaQueryWrapper.eq(WmMaterial::getIsCollection, dto.getIsCollection());
         }
 
         //按照用户查询
-        lambdaQueryWrapper.eq(WmMaterial::getUserId,WmThreadLocalUtil.getUser().getId());
+        lambdaQueryWrapper.eq(WmMaterial::getUserId, WmThreadLocalUtil.getUser().getId());
 
         //按照时间倒序
         lambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
 
 
-        page = page(page,lambdaQueryWrapper);
+        page = page(page, lambdaQueryWrapper);
 
         //3.结果返回
-        ResponseResult responseResult = new PageResponseResult(dto.getPage(),dto.getSize(),(int)page.getTotal());
+        ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(page.getRecords());
         return responseResult;
     }
 
+    @Autowired
+    private WmNewsMaterialMapper wmNewsMaterialMapper;
+
     @Override
     public ResponseResult deletePicture(Long id) {
-        if(id == null ){
+        if (id == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        if (getById(id) == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.MATERIALS_REFERENCE_FAIL);
+        }
+        List<WmNewsMaterial> wmNewsMaterials = wmNewsMaterialMapper.selectList(new LambdaQueryWrapper<WmNewsMaterial>().eq(WmNewsMaterial::getMaterialId, id));
+        if (wmNewsMaterials.size()!=0) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.MATERIALS_HAVE_RELATION);
         }
         WmMaterial material = getById(id);
         String url = material.getUrl();
@@ -114,8 +127,8 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     }
 
     @Override
-    public ResponseResult collectPicture(Long id,short val) {
-        if(id == null ){
+    public ResponseResult collectPicture(Long id, short val) {
+        if (id == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
         WmMaterial v = getById(id);
