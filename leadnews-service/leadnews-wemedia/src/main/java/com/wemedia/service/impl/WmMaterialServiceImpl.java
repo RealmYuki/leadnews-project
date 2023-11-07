@@ -107,6 +107,9 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         if(id == null ){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+        WmMaterial material = getById(id);
+        String url = material.getUrl();
+        fileStorageService.delete(url);
         return ResponseResult.okResult(removeById(id));
     }
 
