@@ -1,6 +1,7 @@
 package com.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.model.article.dto.ArticleDto;
 import com.model.article.dto.ArticleHomeDto;
 import com.model.article.pojo.ApArticle;
 import com.model.common.dtos.ResponseResult;
@@ -13,6 +14,7 @@ import com.model.common.dtos.ResponseResult;
  * {@code @Version}  1.0
  */
 public interface ApArticleService extends IService<ApArticle> {
+
     /**
      * 根据参数加载文章列表
      * @param loadtype 1为加载更多  2为加载最新
@@ -20,4 +22,11 @@ public interface ApArticleService extends IService<ApArticle> {
      * @return
      */
     ResponseResult load(Short loadtype, ArticleHomeDto dto);
+
+    /**
+     * 保存app端相关文章
+     * @param dto
+     * @return
+     */
+    ResponseResult saveArticle(ArticleDto dto) ;
 }

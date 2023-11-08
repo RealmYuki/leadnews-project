@@ -16,4 +16,13 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 mybatis-plus:
     mapper-locations: classpath*:mapper/*.xml
-    type-aliases-package: com.model.user.pojos
+    type-aliases-package: com.model.article.pojos
+    global-config:
+      datacenter-id: 1
+      workerId: 1
+minio:
+  accessKey: minio
+  secretKey: minio123
+  bucket: leadnews
+  endpoint: http://192.168.10.100:9000
+  readPath: http://192.168.10.100:9000
