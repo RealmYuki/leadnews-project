@@ -10,11 +10,10 @@ import com.wemedia.mapper.WmChannelMapper;
 import com.wemedia.mapper.WmNewsMapper;
 import com.wemedia.mapper.WmUserMapper;
 import com.wemedia.service.WmNewsAutoScanService;
-import com.wemedia.service.WmUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +46,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
         }
         //检查文章状态，若为刚提交待审核，则开始审核
         if(wmNews.getStatus().equals(WmNews.Status.SUBMIT.getCode())){
+
             //审核通过将文章保存至App端的文章数据库
             ResponseResult responseResult = saveAppArticle(wmNews);
             if(!responseResult.getCode().equals(200)){
@@ -67,6 +67,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
     @Autowired
     private WmUserMapper wmUserMapper;
 
+    @Qualifier("com.apis.article.IArticleClient")
     @Autowired
     private IArticleClient articleClient;
 

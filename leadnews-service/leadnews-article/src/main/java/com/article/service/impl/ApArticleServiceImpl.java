@@ -5,6 +5,7 @@ import com.article.mapper.ApArticleConfigMapper;
 import com.article.mapper.ApArticleContentMapper;
 import com.article.mapper.ApArticleMapper;
 import com.article.service.ApArticleService;
+import com.article.service.ArticleFreemarkerService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.model.article.dto.ArticleDto;
@@ -45,6 +46,9 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
     private ApArticleContentMapper apArticleContentMapper;
     @Autowired
     private ApArticleConfigMapper apArticleConfigMapper;
+
+    @Autowired
+    private ArticleFreemarkerServiceImpl articleFreemarkerService;
 
     /**
      * 根据参数加载文章列表
@@ -116,6 +120,8 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.updateById(apArticleContent);
         }
+        //异步调用 生成静态文件上传到minio中
+        articleFreemarkerService.buildArticleToMinIO(apArticle,dto.getContent());
         //3.结果返回  文章的id
         return ResponseResult.okResult(apArticle.getId());
     }

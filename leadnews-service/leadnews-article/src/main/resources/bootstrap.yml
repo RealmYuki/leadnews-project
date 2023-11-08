@@ -14,6 +14,12 @@ spring:
     username: root
     password: 4869
     driver-class-name: com.mysql.jdbc.Driver
+  freemarker:
+    cache: false
+    settings:
+      template_update_delay: 0
+    suffix: .ftl
+    template-loader-path: classpath:/templates
 mybatis-plus:
     mapper-locations: classpath*:mapper/*.xml
     type-aliases-package: com.model.article.pojos
