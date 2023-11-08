@@ -22,6 +22,7 @@ import com.utils.thread.WmThreadLocalUtil;
 import com.wemedia.mapper.WmMaterialMapper;
 import com.wemedia.mapper.WmNewsMapper;
 import com.wemedia.mapper.WmNewsMaterialMapper;
+import com.wemedia.service.WmNewsAutoScanService;
 import com.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -87,6 +88,9 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         return pageResponseResult;
     }
 
+    @Autowired
+    private WmNewsAutoScanService wmNewsAutoScanService;
+
     @Override
     public ResponseResult submitNews(WmNewsDto dto) {
         //条件判断
@@ -107,6 +111,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         saveRelativeInfoForContent(materialUrls, wmNews.getId());
         //保存文章封面图片与素材的关系，如果当前布局是自动，需要匹配封面图片
         saveRelativeInfoForCover(dto, wmNews, materialUrls);
+        //提交审核(异步执行)
+        wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 

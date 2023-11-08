@@ -1,5 +1,6 @@
 package com.apis.article;
 
+import com.apis.article.fallback.IArticleClientFallback;
 import com.model.article.dto.ArticleDto;
 import com.model.common.dtos.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * {@code @Create} 2023/11/8 11:11
  * {@code @Version}  1.0
  */
-
-@FeignClient("leadnews-article")
+@FeignClient(value = "leadnews-article",fallback = IArticleClientFallback.class)
 public interface IArticleClient {
     @PostMapping("/api/v1/article/save")
     public ResponseResult saveArticle(@RequestBody ArticleDto dto) ;
