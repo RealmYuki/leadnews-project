@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.common.swagger.Swagger2Configuration, \
-  com.common.swagger.SwaggerConfiguration
+  com.common.swagger.SwaggerConfiguration, \
+  com.common.redis.CacheService
