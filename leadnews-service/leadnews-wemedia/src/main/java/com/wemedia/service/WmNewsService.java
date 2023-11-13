@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.model.common.dtos.ResponseResult;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
+import com.model.wemedia.dtos.WmNewsUpOrDownDto;
 import com.model.wemedia.pojos.WmNews;
 
 /**
@@ -42,4 +43,11 @@ public interface WmNewsService extends IService<WmNews> {
      * @return
      */
     ResponseResult deleteNews(Long id);
+
+    /**
+     * 文章的上下架
+     * @param dto
+     * @return
+     */
+    public ResponseResult downOrUp(WmNewsUpOrDownDto dto);
 }

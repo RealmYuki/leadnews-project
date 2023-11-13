@@ -1,6 +1,12 @@
 server:
   port: 51803
 spring:
+  kafka:
+    bootstrap-servers: 192.168.10.100:9092
+    producer:
+      retries: 10
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   application:
     name: leadnews-wemedia
   cloud:

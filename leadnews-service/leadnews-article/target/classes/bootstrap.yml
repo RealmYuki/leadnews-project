@@ -1,6 +1,12 @@
 server:
   port: 51802
 spring:
+  kafka:
+    bootstrap-servers: 192.168.10.100:9092
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   application:
     name: leadnews-article
   cloud:
