@@ -1,5 +1,13 @@
 # 项目排除路径
 /leadnews-common/target/
 /leadnews-model/target/
-/leadnews-service/leadnews-user/target/
 /leadnews-utils/target/
+/leadnews-basic/leadnews-file-starter/target/
+/leadnews-service/leadnews-user/target/
+/leadnews-service/leadnews-wemedia/target/
+/leadnews-service/leadnews-schedule/target/
+/leadnews-service/leadnews-article/target/
+/leadnews-test/es-init/target/
+/leadnews-gateway/leadnews-wemedia-gateway/target/
+/leadnews-gateway/leadnews-app-gateway/target/
+/leadnews-feign-api/target/

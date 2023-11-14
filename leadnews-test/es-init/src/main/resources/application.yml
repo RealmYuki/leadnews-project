@@ -1,0 +1,16 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: es-article
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.10.100:3306/leadnews_article?useSSL=false
+    username: root
+    password: 4869
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.model.article.pojos
+elasticsearch:
+  host: 192.168.10.100
+  port: 9200
