@@ -10,6 +10,7 @@ package com.apis.article.fallback;
 
 import com.apis.article.IArticleClient;
 import com.model.article.dto.ArticleDto;
+import com.model.article.pojo.ApArticle;
 import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,10 @@ public class IArticleClientFallback implements IArticleClient {
     @Override
     public ResponseResult saveArticle(ArticleDto dto)  {
         return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR,"获取数据失败");
+    }
+
+    @Override
+    public ApArticle getArticle(Long id) {
+        return null;
     }
 }

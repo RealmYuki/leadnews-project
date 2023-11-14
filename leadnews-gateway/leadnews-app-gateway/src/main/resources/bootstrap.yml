@@ -35,3 +35,9 @@ spring:
             - Path=/article/**
           filters:
             - StripPrefix= 1
+        - id: leadnews-search
+          uri: lb://leadnews-search
+          predicates:
+            - Path=/search/**
+          filters:
+            - StripPrefix= 1

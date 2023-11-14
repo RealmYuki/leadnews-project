@@ -3,6 +3,7 @@ package com.article.feign;
 import com.apis.article.IArticleClient;
 import com.article.service.ApArticleService;
 import com.model.article.dto.ArticleDto;
+import com.model.article.pojo.ApArticle;
 import com.model.common.dtos.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,5 +25,11 @@ public class ArticleClient implements IArticleClient {
     @Override
     public ResponseResult saveArticle(ArticleDto dto) {
         return apArticleService.saveArticle(dto);
+    }
+
+    @Override
+    public ApArticle getArticle(Long id) {
+        ApArticle apArticle = apArticleService.getById(id);
+        return apArticle;
     }
 }

@@ -131,6 +131,15 @@ public class ResponseResult<T> implements Serializable {
         this.host = host;
     }
 
+    @Override
+    public String toString() {
+        return "ResponseResult{" +
+                "host='" + host + '\'' +
+                ", code=" + code +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", data=" + data +
+                '}';
+    }
 
     public static void main(String[] args) {
         //前置

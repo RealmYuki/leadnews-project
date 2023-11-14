@@ -1,0 +1,22 @@
+server:
+  port: 51804
+spring:
+  kafka:
+    bootstrap-servers: 192.168.10.100:9092
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  application:
+    name: leadnews-search
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.10.100:8848
+      config:
+        enabled: false
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+elasticsearch:
+  host: 192.168.10.100
+  port: 9200

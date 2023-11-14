@@ -1,5 +1,6 @@
 package com.article.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.article.mapper.ApArticleContentMapper;
@@ -8,10 +9,14 @@ import com.article.service.ArticleFreemarkerService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.file.service.FileStorageService;
 import com.model.article.pojo.ApArticle;
+import com.model.common.constants.ArticleConstants;
+import com.model.search.vos.SearchArticleVo;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +82,26 @@ public class ArticleFreemarkerServiceImpl implements ArticleFreemarkerService {
             apArticleService.update(Wrappers.<ApArticle>lambdaUpdate().eq(ApArticle::getId,apArticle.getId())
                     .set(ApArticle::getStaticUrl,path));
 
+            //发送消息，创建索引
+            createArticleESIndex(apArticle,content,path);
         }
+    }
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
+
+    /**
+     * 发送消息，创建索引
+     * @param apArticle
+     * @param content
+     * @param path
+     */
+    private void createArticleESIndex(ApArticle apArticle, String content, String path) {
+        SearchArticleVo vo = new SearchArticleVo();
+        BeanUtils.copyProperties(apArticle,vo);
+        vo.setContent(content);
+        vo.setStaticUrl(path);
+
+        kafkaTemplate.send(ArticleConstants.ARTICLE_ES_INS_SYNC_TOPIC, JSON.toJSONString(vo));
     }
 }

@@ -2,17 +2,21 @@ package com.wemedia.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.common.utils.StringUtils;
+import com.apis.article.IArticleClient;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.model.common.constants.WemediaConstants;
 import com.common.exception.CustomException;
+import com.model.article.pojo.ApArticle;
+import com.model.common.constants.ArticleConstants;
+import com.model.common.constants.WemediaConstants;
 import com.model.common.constants.WmNewsMessageConstants;
 import com.model.common.dtos.PageResponseResult;
 import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
+import com.model.search.vos.SearchArticleVo;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.model.wemedia.dtos.WmNewsUpOrDownDto;
@@ -29,12 +33,15 @@ import com.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.model.common.constants.WmNewsMessageConstants.WM_NEWS_ES_DEL_SYNC_TOPIC;
 
 /**
  * ClassName: WmNewsServiceImpl
@@ -137,15 +144,15 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         if (wmNews == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
-        if (wmNews.getStatus().equals(WmNews.Status.NORMAL.getCode())){
+        if (wmNews.getStatus().equals(WmNews.Status.NORMAL.getCode())) {
             return ResponseResult.okResult(removeById(id));
         }
         wmNewsMaterialMapper.delete(new LambdaQueryWrapper<WmNewsMaterial>().eq(WmNewsMaterial::getNewsId, id));
-        if (wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())){
-            if(wmNews.getArticleId() != null){
-                Map<String,Object> map = new HashMap<>();
-                map.put("articleId",wmNews.getArticleId());
-                kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_DELETE_TOPIC,JSON.toJSONString(map));
+        if (wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
+            if (wmNews.getArticleId() != null) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("articleId", wmNews.getArticleId());
+                kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_DELETE_TOPIC, JSON.toJSONString(map));
             }
         }
         return ResponseResult.okResult(removeById(id));
@@ -154,36 +161,51 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     @Autowired
     private KafkaTemplate kafkaTemplate;
 
+    @Qualifier("com.apis.article.IArticleClient")
+    @Autowired
+    private IArticleClient articleClient;
+
+
     @Override
     public ResponseResult downOrUp(WmNewsUpOrDownDto dto) {
         //1.检查参数
-        if(dto.getId() == null){
+        if (dto.getId() == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
         //2.查询文章
         WmNews wmNews = getById(dto.getId());
-        if(wmNews == null){
-            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"文章不存在");
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "文章不存在");
         }
 
         //3.判断文章是否已发布
-        if(!wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())){
-            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID,"当前文章不是发布状态，不能上下架");
+        if (!wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "当前文章不是发布状态，不能上下架");
         }
 
         //4.判断文章enable参数
-        if(dto.getEnable() == null && dto.getEnable() < 0 && dto.getEnable() > 1){
+        if (dto.getEnable() == null && dto.getEnable() < 0 && dto.getEnable() > 1) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
         wmNews.setEnable(dto.getEnable());
         updateById(wmNews);
-        if(wmNews.getArticleId() != null){
-            Map<String,Object> map = new HashMap<>();
-            map.put("articleId",wmNews.getArticleId());
-            map.put("enable",dto.getEnable());
-            kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC,JSON.toJSONString(map));
+        if (wmNews.getArticleId() != null) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("articleId", wmNews.getArticleId());
+            map.put("enable", dto.getEnable());
+            kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC, JSON.toJSONString(map));
+            if (dto.getEnable() == 0) {
+                kafkaTemplate.send(WM_NEWS_ES_DEL_SYNC_TOPIC, JSON.toJSONString(map));
+            } else if (dto.getEnable() == 1) {
+                SearchArticleVo vo = new SearchArticleVo();
+                ApArticle apArticle = articleClient.getArticle(wmNews.getArticleId());
+                BeanUtils.copyProperties(apArticle, vo);
+                vo.setContent(wmNews.getContent());
+                vo.setLayout(Integer.valueOf(wmNews.getType()));
+                kafkaTemplate.send(ArticleConstants.ARTICLE_ES_INS_SYNC_TOPIC, JSON.toJSONString(vo));
+            }
         }
 
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
