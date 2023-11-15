@@ -3,14 +3,13 @@ package com.article.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.nacos.common.utils.StringUtils;
-import com.article.mapper.ApArticleContentMapper;
 import com.article.service.ApArticleService;
 import com.article.service.ArticleFreemarkerService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.file.service.FileStorageService;
 import com.model.article.pojo.ApArticle;
 import com.model.common.constants.ArticleConstants;
-import com.model.search.vos.SearchArticleVo;
+import com.model.search.vos.SearchArticleVoNew;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
@@ -97,10 +96,11 @@ public class ArticleFreemarkerServiceImpl implements ArticleFreemarkerService {
      * @param path
      */
     private void createArticleESIndex(ApArticle apArticle, String content, String path) {
-        SearchArticleVo vo = new SearchArticleVo();
+        SearchArticleVoNew vo = new SearchArticleVoNew();
         BeanUtils.copyProperties(apArticle,vo);
         vo.setContent(content);
         vo.setStaticUrl(path);
+        vo.handelText();
 
         kafkaTemplate.send(ArticleConstants.ARTICLE_ES_INS_SYNC_TOPIC, JSON.toJSONString(vo));
     }

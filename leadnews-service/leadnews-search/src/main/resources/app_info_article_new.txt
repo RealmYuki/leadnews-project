@@ -1,0 +1,91 @@
+重建索引库以解决app_info_article的Content中含有json的冗余词条以及携带图片url导致的搜索结果不理想的问题
+
+重建的索引库中
+content      --> 冗余数据
+contentText  --> 用以搜索
+staticUrl    --> 用户查看的静态网页
+所以存在优化空间：还是可以使用app_info_article，直接提取原content的文本内容再赋给content用以搜索
+
+新索引库
+PUT /app_info_article_new
+{
+    "mappings":{
+        "properties":{
+            "id":{
+                "type":"long"
+            },
+            "publishTime":{
+                "type":"date"
+            },
+            "layout":{
+                "type":"integer"
+            },
+            "images":{
+                "type":"keyword",
+                "index": false
+            },
+            "staticUrl":{
+                "type":"keyword",
+                "index": false
+            },
+            "authorId": {
+                "type": "long"
+            },
+            "authorName": {
+                "type": "text"
+            },
+            "title":{
+                "type":"text",
+                "analyzer":"ik_smart"
+            },
+            "content":{
+                "type":"keyword",
+                "index": false
+            },
+            "contentText":{
+                "type":"text",
+                "analyzer":"ik_smart"
+            }
+        }
+    }
+}
+
+旧索引库
+PUT /app_info_article
+{
+    "mappings":{
+        "properties":{
+            "id":{
+                "type":"long"
+            },
+            "publishTime":{
+                "type":"date"
+            },
+            "layout":{
+                "type":"integer"
+            },
+            "images":{
+                "type":"keyword",
+                "index": false
+            },
+            "staticUrl":{
+                "type":"keyword",
+                "index": false
+            },
+            "authorId": {
+                "type": "long"
+            },
+            "authorName": {
+                "type": "text"
+            },
+            "title":{
+                "type":"text",
+                "analyzer":"ik_smart"
+            },
+            "content":{
+                "type":"text",
+                "analyzer":"ik_smart"
+            }
+        }
+    }
+}

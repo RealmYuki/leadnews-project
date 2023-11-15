@@ -59,13 +59,13 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
         }
 
         //2.设置查询条件
-        SearchRequest searchRequest = new SearchRequest("app_info_article");
+        SearchRequest searchRequest = new SearchRequest("app_info_article_new");
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         //关键字的分词之后查询
-        boolQueryBuilder.must(QueryBuilders.queryStringQuery(dto.getSearchWords()).field("title").field("content")
+        boolQueryBuilder.must(QueryBuilders.queryStringQuery(dto.getSearchWords()).field("title").field("contentText")
                 .defaultOperator(Operator.OR));
         //查询小于minDate的数据
         boolQueryBuilder.filter(QueryBuilders.rangeQuery("publishTime").lt(dto.getMinBehotTime()));

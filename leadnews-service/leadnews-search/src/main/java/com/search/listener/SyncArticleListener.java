@@ -3,7 +3,7 @@ package com.search.listener;
 import com.alibaba.fastjson.JSON;
 import com.model.common.constants.ArticleConstants;
 import com.model.common.constants.WmNewsMessageConstants;
-import com.model.search.vos.SearchArticleVo;
+import com.model.search.vos.SearchArticleVoNew;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -37,8 +37,8 @@ public class SyncArticleListener {
 
             log.info("SyncArticleInsertListener,message={}",message);
 
-            SearchArticleVo searchArticleVo = JSON.parseObject(message, SearchArticleVo.class);
-            IndexRequest indexRequest = new IndexRequest("app_info_article");
+            SearchArticleVoNew searchArticleVo = JSON.parseObject(message, SearchArticleVoNew.class);
+            IndexRequest indexRequest = new IndexRequest("app_info_article_new");
             indexRequest.id(searchArticleVo.getId().toString());
             indexRequest.source(message, XContentType.JSON);
             try {
@@ -55,7 +55,7 @@ public class SyncArticleListener {
         if(StringUtils.isNotBlank(message)){
             log.info("SyncArticleDeleteListener,message={}",message);
             Map map = JSON.parseObject(message, Map.class);
-            DeleteRequest deleteRequest = new DeleteRequest("app_info_article", map.get("articleId").toString());
+            DeleteRequest deleteRequest = new DeleteRequest("app_info_article_new", map.get("articleId").toString());
             try {
                 restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
             } catch (IOException e) {

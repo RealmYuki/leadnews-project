@@ -1,4 +1,4 @@
-package com.es.pojo;
+package com.model.search.vos;
 
 import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class SearchArticleVo {
+public class SearchArticleVoNew {
 
     // 文章id
     private Long id;
@@ -29,6 +29,7 @@ public class SearchArticleVo {
     private String staticUrl;
     //文章内容
     private String content;
+
     //文章内容纯文本
     private String contentText;
 
@@ -47,5 +48,6 @@ public class SearchArticleVo {
         }
         this.contentText = stringBuilder.toString();
     }
+
 
 }

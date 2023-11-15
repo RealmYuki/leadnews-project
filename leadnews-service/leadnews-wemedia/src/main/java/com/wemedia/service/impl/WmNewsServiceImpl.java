@@ -16,7 +16,7 @@ import com.model.common.constants.WmNewsMessageConstants;
 import com.model.common.dtos.PageResponseResult;
 import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
-import com.model.search.vos.SearchArticleVo;
+import com.model.search.vos.SearchArticleVoNew;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.model.wemedia.dtos.WmNewsUpOrDownDto;
@@ -199,11 +199,12 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             if (dto.getEnable() == 0) {
                 kafkaTemplate.send(WM_NEWS_ES_DEL_SYNC_TOPIC, JSON.toJSONString(map));
             } else if (dto.getEnable() == 1) {
-                SearchArticleVo vo = new SearchArticleVo();
+                SearchArticleVoNew vo = new SearchArticleVoNew();
                 ApArticle apArticle = articleClient.getArticle(wmNews.getArticleId());
                 BeanUtils.copyProperties(apArticle, vo);
                 vo.setContent(wmNews.getContent());
                 vo.setLayout(Integer.valueOf(wmNews.getType()));
+                vo.handelText();
                 kafkaTemplate.send(ArticleConstants.ARTICLE_ES_INS_SYNC_TOPIC, JSON.toJSONString(vo));
             }
         }
