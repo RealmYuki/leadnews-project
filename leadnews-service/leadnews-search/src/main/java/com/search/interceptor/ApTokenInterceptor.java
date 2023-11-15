@@ -1,7 +1,7 @@
-package com.wemedia.interceptor;
+package com.search.interceptor;
 
-import com.model.wemedia.pojos.WmUser;
-import com.utils.thread.WmThreadLocalUtil;
+import com.model.user.pojo.ApUser;
+import com.utils.thread.ApThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -17,16 +17,16 @@ import java.util.Optional;
  * {@code @Version}  1.0
  */
 @Slf4j
-public class WmTokenInterceptor implements HandlerInterceptor {
+public class ApTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String userId = request.getHeader("userId");
         Optional<String> optional = Optional.ofNullable(userId);
         if (optional.isPresent()) {
-            WmUser wmUser = new WmUser();
-            wmUser.setId(Integer.valueOf(userId));
-            WmThreadLocalUtil.setUser(wmUser);
-            log.info("wmTokenFilter设置用户信息到thread-local中...");
+            ApUser apUser = new ApUser();
+            apUser.setId(Integer.valueOf(userId));
+            ApThreadLocalUtil.setUser(apUser);
+            log.info("apTokenFilter设置用户信息到thread-local中...");
         }
         return true;
     }
@@ -34,6 +34,6 @@ public class WmTokenInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         log.info("清理threadlocal...");
-        WmThreadLocalUtil.clear();
+        ApThreadLocalUtil.clear();
     }
 }

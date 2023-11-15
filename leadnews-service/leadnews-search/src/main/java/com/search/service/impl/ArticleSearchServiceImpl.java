@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
 import com.model.search.dto.UserSearchDto;
+import com.model.user.pojo.ApUser;
+import com.search.service.ApUserSearchService;
 import com.search.service.ArticleSearchService;
+import com.utils.thread.ApThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
@@ -40,6 +43,8 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+    @Autowired
+    private ApUserSearchService apUserSearchService;
 
     @Override
     public ResponseResult search(UserSearchDto dto) {
@@ -47,6 +52,12 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
         if (dto == null || StringUtils.isBlank(dto.getSearchWords())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+
+        ApUser user = ApThreadLocalUtil.getUser();
+        if(user != null && dto.getFromIndex() == 0){
+            apUserSearchService.insert(dto.getSearchWords(), user.getId());
+        }
+
         //2.设置查询条件
         SearchRequest searchRequest = new SearchRequest("app_info_article");
 
