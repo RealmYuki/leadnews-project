@@ -1,0 +1,22 @@
+server:
+  port: 51809
+spring:
+  application:
+    name: leadnews-admin
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.10.100:8848
+      config:
+        enabled: false
+  datasource:
+    url: jdbc:mysql://192.168.10.100:3306/leadnews_admin?useSSL=false
+    username: root
+    password: 4869
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis-plus:
+    mapper-locations: classpath*:mapper/*.xml
+    type-aliases-package: com.model.admin.pojos
+    global-config:
+      datacenter-id: 1
+      workerId: 1
