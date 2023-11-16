@@ -1,11 +1,14 @@
 package com.wemedia.controller.v1;
 
 import com.model.common.dtos.ResponseResult;
+import com.model.common.enums.AppHttpCodeEnum;
+import com.model.wemedia.dtos.WmChannelDto;
+import com.model.wemedia.dtos.WmSensitiveDto;
+import com.model.wemedia.pojos.WmChannel;
+import com.model.wemedia.pojos.WmSensitive;
 import com.wemedia.service.WmChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -26,4 +29,25 @@ public class WmChannelController {
     public ResponseResult findAll(){
         return wmChannelService.findAll();
     }
+
+    @PostMapping("/list")
+    public ResponseResult findList(@RequestBody WmChannelDto dto){
+        return wmChannelService.findList(dto);
+    }
+
+    @GetMapping("/del/{id}")
+    public ResponseResult deleteById(@PathVariable("id") Long id){
+        return wmChannelService.delete(id);
+    }
+
+    @PostMapping("/save")
+    public ResponseResult save(@RequestBody WmChannel wmChannel){
+        return wmChannelService.insert(wmChannel);
+    }
+
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody WmChannel wmChannel){
+        return wmChannelService.update(wmChannel);
+    }
+
 }

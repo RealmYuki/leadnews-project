@@ -12,4 +12,5 @@
 /leadnews-test/es-init/target/
 /leadnews-gateway/leadnews-wemedia-gateway/target/
 /leadnews-gateway/leadnews-app-gateway/target/
+/leadnews-gateway/leadnews-admin-gateway/target/
 /leadnews-feign-api/target/
