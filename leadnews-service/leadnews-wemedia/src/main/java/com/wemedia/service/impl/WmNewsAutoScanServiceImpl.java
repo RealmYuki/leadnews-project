@@ -59,6 +59,11 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             if(!isSensitive) {
                 return;
             }
+            List images = (List) textAndImages.get("images");
+            if (images.size() > 0) {
+                updateWmNews(wmNews,(short) 3,"人工审核中");
+                return;
+            }
 
             //审核通过将文章保存至App端的文章数据库
             ResponseResult responseResult = saveAppArticle(wmNews);
@@ -169,7 +174,8 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
      * @param wmNews
      * @return
      */
-    private ResponseResult saveAppArticle(WmNews wmNews) {
+    @Override
+    public ResponseResult saveAppArticle(WmNews wmNews) {
         ArticleDto articleDto = new ArticleDto();
         BeanUtils.copyProperties(wmNews,articleDto);
         articleDto.setLayout(wmNews.getType());

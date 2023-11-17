@@ -1,6 +1,7 @@
 package com.wemedia.controller.v1;
 
 import com.model.common.dtos.ResponseResult;
+import com.model.wemedia.dtos.NewsAuthDto;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.model.wemedia.dtos.WmNewsUpOrDownDto;
@@ -45,6 +46,26 @@ public class WmNewsController {
     @PostMapping("/down_or_up")
     public ResponseResult downOrUp(@RequestBody WmNewsUpOrDownDto dto){
         return wmNewsService.downOrUp(dto);
+    }
+
+    @PostMapping("/list_vo")
+    public ResponseResult adminList(@RequestBody NewsAuthDto dto){
+        return wmNewsService.adminList(dto);
+    }
+
+    @GetMapping("/one_vo/{id}")
+    public ResponseResult adminFindOne(@PathVariable("id") Long id){
+        return wmNewsService.adminFindOne(id);
+    }
+
+    @PostMapping("/auth_fail")
+    public ResponseResult adminAuthFail(@RequestBody NewsAuthDto dto){
+        return wmNewsService.adminAuthFail(dto);
+    }
+
+    @PostMapping("/auth_pass")
+    public ResponseResult adminAuthPass(@RequestBody NewsAuthDto dto){
+        return wmNewsService.adminAuthPass(dto);
     }
 
 }

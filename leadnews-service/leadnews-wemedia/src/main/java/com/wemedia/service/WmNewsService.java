@@ -2,6 +2,7 @@ package com.wemedia.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.model.common.dtos.ResponseResult;
+import com.model.wemedia.dtos.NewsAuthDto;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.model.wemedia.dtos.WmNewsUpOrDownDto;
@@ -50,4 +51,32 @@ public interface WmNewsService extends IService<WmNews> {
      * @return
      */
     public ResponseResult downOrUp(WmNewsUpOrDownDto dto);
+
+    /**
+     * 管理端查询文章列表
+     * @param dto
+     * @return
+     */
+    ResponseResult adminList(NewsAuthDto dto);
+
+    /**
+     * 管理端查看指定文章
+     * @param id
+     * @return
+     */
+    ResponseResult adminFindOne(Long id);
+
+    /**
+     * 人工审核驳回
+     * @param dto
+     * @return
+     */
+    ResponseResult adminAuthFail(NewsAuthDto dto);
+
+    /**
+     * 人工审核通过
+     * @param dto
+     * @return
+     */
+    ResponseResult adminAuthPass(NewsAuthDto dto);
 }

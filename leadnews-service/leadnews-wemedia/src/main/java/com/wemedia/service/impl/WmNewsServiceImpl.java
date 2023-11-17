@@ -17,6 +17,7 @@ import com.model.common.dtos.PageResponseResult;
 import com.model.common.dtos.ResponseResult;
 import com.model.common.enums.AppHttpCodeEnum;
 import com.model.search.vos.SearchArticleVoNew;
+import com.model.wemedia.dtos.NewsAuthDto;
 import com.model.wemedia.dtos.WmNewsDto;
 import com.model.wemedia.dtos.WmNewsPageReqDto;
 import com.model.wemedia.dtos.WmNewsUpOrDownDto;
@@ -28,8 +29,10 @@ import com.utils.thread.WmThreadLocalUtil;
 import com.wemedia.mapper.WmMaterialMapper;
 import com.wemedia.mapper.WmNewsMapper;
 import com.wemedia.mapper.WmNewsMaterialMapper;
+import com.wemedia.mapper.WmUserMapper;
 import com.wemedia.service.WmNewsAutoScanService;
 import com.wemedia.service.WmNewsService;
+import com.wemedia.service.WmUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,6 +213,94 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         }
 
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    @Autowired
+    private WmUserService wmUserService;
+
+    @Override
+    public ResponseResult adminList(NewsAuthDto dto) {
+        //检查参数
+        if (dto == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        dto.checkParam();
+        IPage page = new Page(dto.getPage(), dto.getSize());
+        LambdaQueryWrapper<WmNews> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(dto.getTitle() != null ){
+            lambdaQueryWrapper.like(WmNews::getTitle,dto.getTitle());
+        }
+        if (dto.getStatus() != null){
+            lambdaQueryWrapper.eq(WmNews::getStatus,dto.getStatus());
+        }
+        lambdaQueryWrapper.orderByDesc(WmNews::getCreatedTime);
+        page = page(page,lambdaQueryWrapper);
+        List<WmNews> wmNewsList = page.getRecords();
+        if (wmNewsList.size()!=0){
+            LambdaQueryWrapper<WmUser> userQueryWrapper = new LambdaQueryWrapper<>();
+            for (WmNews wmNews : wmNewsList){
+                userQueryWrapper.eq(WmUser::getId,wmNews.getUserId());
+                userQueryWrapper.select(WmUser::getName);
+                wmNews.setAuthorName(wmUserService.getOne(userQueryWrapper).getName());
+            }
+        }
+        PageResponseResult pageResponseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
+        pageResponseResult.setData(wmNewsList);
+        return pageResponseResult;
+    }
+
+    @Override
+    public ResponseResult adminFindOne(Long id) {
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        LambdaQueryWrapper<WmNews> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmNews::getArticleId,id);
+        WmNews wmNews = getById(id);
+        if (wmNews == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        LambdaQueryWrapper<WmUser> userQueryWrapper = new LambdaQueryWrapper<>();
+        userQueryWrapper.eq(WmUser::getId,wmNews.getUserId());
+        userQueryWrapper.select(WmUser::getName);
+        wmNews.setAuthorName(wmUserService.getOne(userQueryWrapper).getName());
+        return ResponseResult.okResult(wmNews);
+    }
+
+
+    @Override
+    public ResponseResult adminAuthFail(NewsAuthDto dto) {
+        if (dto.getId() == null||dto.getMsg() == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE);
+        }
+        WmNews wmNews = getById(dto.getId());
+        if (wmNews==null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        wmNews.setReason(dto.getMsg());
+        wmNews.setStatus((short) 2);
+        return ResponseResult.okResult(updateById(wmNews));
+    }
+
+    @Override
+    public ResponseResult adminAuthPass(NewsAuthDto dto) {
+        if (dto.getId() == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE);
+        }
+        WmNews wmNews = getById(dto.getId());
+        if (wmNews==null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        ResponseResult responseResult = wmNewsAutoScanService.saveAppArticle(wmNews);
+        if(!responseResult.getCode().equals(200)){
+            throw new RuntimeException("WmNewsAutoScanServiceImpl-文章审核，保存app端相关文章数据失败");
+        }
+        //回填article_id
+        wmNews.setArticleId((Long) responseResult.getData());
+        wmNews.setStatus((short) 9);
+        wmNews.setReason("审核通过");
+        updateById(wmNews);
+        return ResponseResult.okResult(responseResult);
     }
 
     /**

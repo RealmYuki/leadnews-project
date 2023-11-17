@@ -6,6 +6,7 @@ import com.article.mapper.ApArticleContentMapper;
 import com.article.mapper.ApArticleMapper;
 import com.article.service.ApArticleService;
 import com.article.service.ArticleFreemarkerService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.model.article.dto.ArticleDto;
@@ -115,6 +116,12 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
             //2.2 存在id   修改  文章  文章内容
             //修改  文章
             updateById(apArticle);
+            //将配置重新修改为上架
+            LambdaQueryWrapper<ApArticleConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(ApArticleConfig::getArticleId,apArticle.getId());
+            ApArticleConfig apArticleConfig = apArticleConfigMapper.selectOne(lambdaQueryWrapper);
+            apArticleConfig.setIsDown(false);
+            apArticleConfigMapper.updateById(apArticleConfig);
             //修改文章内容
             ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, dto.getId()));
             apArticleContent.setContent(dto.getContent());
