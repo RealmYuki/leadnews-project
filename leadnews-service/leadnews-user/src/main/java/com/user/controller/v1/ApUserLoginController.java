@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/v1/login")
 @Api(value = "app端用户登录", tags = "ap_user", description = "app端用户登录API")
-public class ApUserController {
+public class ApUserLoginController {
 
     @Resource
     private ApUserService apUserService;

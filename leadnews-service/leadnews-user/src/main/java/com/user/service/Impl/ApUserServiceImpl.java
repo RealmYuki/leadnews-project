@@ -10,11 +10,9 @@ import com.user.mapper.ApUserMapper;
 import com.user.service.ApUserService;
 import com.utils.common.AppJwtUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.crypto.Digest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.sql.Wrapper;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,6 +3,7 @@ package com.article.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.model.article.dto.ArticleDto;
 import com.model.article.dto.ArticleHomeDto;
+import com.model.article.dto.ArticleInfoDto;
 import com.model.article.pojo.ApArticle;
 import com.model.common.dtos.ResponseResult;
 
@@ -29,4 +30,11 @@ public interface ApArticleService extends IService<ApArticle> {
      * @return
      */
     ResponseResult saveArticle(ArticleDto dto) ;
+
+    /**
+     * 加载文章行为，是否点赞 是否收藏等 数据
+     * @param dto
+     * @return
+     */
+    ResponseResult loadArticleBehavior(ArticleInfoDto dto);
 }

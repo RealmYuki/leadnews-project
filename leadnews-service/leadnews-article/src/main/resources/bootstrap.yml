@@ -30,6 +30,9 @@ spring:
       template_update_delay: 0
     suffix: .ftl
     template-loader-path: classpath:/templates
+  redis:
+    host: 192.168.10.100
+    port: 6379
 mybatis-plus:
     mapper-locations: classpath*:mapper/*.xml
     type-aliases-package: com.model.article.pojos
